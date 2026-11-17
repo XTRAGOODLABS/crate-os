@@ -1,12 +1,14 @@
 {
   "name": "@xtragoodlabs/crate-os-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0-beta.1",
   "private": true,
   "type": "module",
   "description": "Crate OS by XTRAGOODLABS desktop app.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test:dj-mixes": "python3 -m unittest discover -s dj-mixes-runtime/tests -v",
+    "dj-mixes:build": "bash scripts/build-dj-mixes-sidecar.sh",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
@@ -24,6 +26,6 @@
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
     "typescript": "latest",
-    "vite": "latest"
+    "vite": "^8.3.8"
   }
 }

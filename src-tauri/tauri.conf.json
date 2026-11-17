@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Crate OS",
-  "version": "0.1.0",
+  "version": "0.2.0-beta.1",
   "identifier": "labs.xtragood.crate-os",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -20,12 +20,23 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost http://127.0.0.1:18770; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; frame-src http://127.0.0.1:18770"
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
+    "externalBin": [
+      "binaries/dj-mixes-server"
+    ],
+    "resources": {
+      "../dj-mixes-runtime/mixes.html": "dj-mixes-runtime/mixes.html",
+      "../dj-mixes-runtime/tools/djay_deck_keys.js": "dj-mixes-runtime/tools/djay_deck_keys.js",
+      "../dj-mixes-runtime/assets": "dj-mixes-runtime/assets",
+      "../dj-mixes-runtime/traktor-link": "dj-mixes-runtime/traktor-link",
+      "../dj-mixes-runtime/Add Traktor Link.command": "dj-mixes-runtime/Add Traktor Link.command",
+      "../dj-mixes-runtime/Remove Traktor Link.command": "dj-mixes-runtime/Remove Traktor Link.command"
+    },
     "category": "Music",
     "icon": [
       "icons/32x32.png",

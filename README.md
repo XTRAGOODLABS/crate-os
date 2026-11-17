@@ -1,49 +1,58 @@
-# Crate OS Desktop
+# Crate OS DJ Edition
 
-Crate OS by XTRAGOODLABS is a local-first desktop app for scanning DJ libraries, storing scan results in SQLite, and preparing library workflows behind supporter/paywall gates.
+Crate OS is a local-first macOS music-library and DJ workflow application built with Tauri 2, React, TypeScript, Rust, SQLite, and the bundled GOOD MIXX sidecar.
 
-## Requirements
+GOOD MIXX is based on an original idea by **DJ Aquarobotics**.
 
-- Node.js and npm
-- Rust/Cargo from `rustup`
-- macOS, Windows, or Linux desktop environment supported by Tauri
+Version: `0.2.0-beta.1`
 
-On macOS, install Rust with:
+## Features
+
+- Local music-library scanning, metadata review, SQLite persistence, and recoverable tag writes.
+- A Crate Builder for searching the scanned library, arranging tracks in play order, and saving named M3U8 or CSV playlists.
+- CSV, DJ-prep CSV, M3U8, and JSON exports.
+- The user-updated GOOD MIXX interface and behavior: LIVE decks, automatic djay or Traktor tracking, GOOD MIX, WHAT'S NEXT, BPM/Camelot/energy suggestions, REVIEW A SET, MY MIXES, and saved transition memory.
+- Optional protected LAN access for an iPad or Meta Portal.
+- No Python installation, Terminal window, Live365 account, or running djay session is required for the app itself.
+
+## Development
+
+Requirements: Node.js 22+, Rust stable, and Python 3 for building the bundled sidecar.
 
 ```sh
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-Then restart the terminal so `cargo` is on PATH.
-
-## Run In Development
-
-```sh
-cd apps/crate-os-desktop
 npm install
+npm run test:dj-mixes
+npm run dj-mixes:build
+npm run build
+cargo test --manifest-path src-tauri/Cargo.toml
 npm run tauri:dev
 ```
 
-That starts Vite and opens the native Tauri window with the folder picker, scan progress events, and local SQLite persistence.
-
-## Build Checks
-
-Frontend build:
+Build a macOS application for the current architecture:
 
 ```sh
-npm run build
-```
-
-Native app bundle:
-
-```sh
-npm run tauri:build
-```
-
-macOS app bundle without the DMG wrapper:
-
-```sh
+npm run dj-mixes:build
 npm run tauri:build:app
 ```
 
-The current scanner walks audio folders, reads runtime and audio tags, preserves unsynced editable metadata across rescans, stores scan summaries and tracks in SQLite, and emits progress. Exports can target selected tracks, the active folder, or the full latest scan as CSV, DJ prep CSV, or M3U8 playlist; JSON backup and Live365 CSV are supporter-gated. Selected tracks can also write title, artist, album, genre, and year back to audio files after creating an automatic backup, and the latest backup can be restored from the app.
+The sidecar builder names its output for the current Rust target. Build Apple Silicon on an arm64 Mac and Intel on an Intel runner. The repository workflow uses `macos-15` and `macos-15-intel` jobs.
+
+## Data and migration
+
+Crate OS stores its database and GOOD MIXX data under the macOS application-support directory for `labs.xtragood.crate-os`. It never bundles or publishes a user's library, mixes, or audio.
+
+On first GOOD MIXX start, files are copied from `~/Portal-Stems-FX/data` only when the matching destination does not already exist. The toolbar also exposes the same non-destructive import explicitly.
+
+## Networking and permissions
+
+Crate OS's bundled GOOD MIXX binds to `127.0.0.1:18770` by default so it can coexist with a standalone GOOD MIXX installation on 8770. **Enable iPad / Portal** restarts it on the LAN with a generated token. The token is exchanged for an HttpOnly, SameSite cookie before the interface loads.
+
+Reading djay history is read-only. Reading keys displayed on djay decks additionally needs macOS Accessibility permission for Crate OS.
+
+## Radio publishing
+
+Radio station (Live365) publishing tools are not part of this repository. Crate OS writes a Live365-ready CSV export and keeps each track's readiness label, but never signs in to or publishes to Live365.
+
+## Release status
+
+See [RELEASE-NOTES-v0.2.0-beta.1.md](RELEASE-NOTES-v0.2.0-beta.1.md), [CHANGELOG.md](CHANGELOG.md), and [TROUBLESHOOTING.md](TROUBLESHOOTING.md). Local compilation is distinct from Apple code signing and notarization.

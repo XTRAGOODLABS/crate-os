@@ -1,7 +1,9 @@
+import DjMixes from "./DjMixes";
+import PlaylistBuilder from "./PlaylistBuilder";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useState } from "react";
-import { productByline, productName, productTagline } from "./lib/brand";
+import { productByline, productName } from "./lib/brand";
 import { checkFeature } from "./lib/paywall/featureGate";
 import type { ToolkitTier } from "./lib/entitlements";
 
@@ -88,7 +90,9 @@ const readinessOptions = [
 ];
 const statusOptions = ["all", "new", "changed", "unchanged", "missing", "scanned"];
 
+
 export default function App() {
+  const [view, setView] = useState<"lib" | "builder" | "mixes">("lib");
   const [folder, setFolder] = useState("");
   const [limit, setLimit] = useState("");
   const [isScanning, setIsScanning] = useState(false);
@@ -104,8 +108,8 @@ export default function App() {
   const [exportStatus, setExportStatus] = useState("");
   const [isWritingTags, setIsWritingTags] = useState(false);
   const [isRestoringTags, setIsRestoringTags] = useState(false);
-  const currentTier: ToolkitTier = "free";
-  const gate = checkFeature(currentTier, "live365.upload.apply");
+  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const currentTier: ToolkitTier = "pro";
   const advancedExportGate = checkFeature(currentTier, "live365.upload.apply");
 
   const refreshLatest = useCallback(async () => {
@@ -233,13 +237,13 @@ export default function App() {
   }
 
   async function exportScan(format: "csv" | "djprep" | "m3u" | "json" | "live365") {
+    setIsFileMenuOpen(false);
     setExportStatus("");
     try {
       const selected = Array.from(selectedPaths);
       const result = await invoke<{ path: string }>("export_latest_scan", {
         args: {
           format,
-          tier: currentTier,
           paths: selected.length > 0 ? selected : null,
           folder: selected.length > 0 ? null : folderFilter,
           status: statusFilter,
@@ -257,6 +261,7 @@ export default function App() {
   }
 
   async function openExportsFolder() {
+    setIsFileMenuOpen(false);
     try {
       await invoke("open_exports_folder");
     } catch (error) {
@@ -367,323 +372,342 @@ export default function App() {
       .slice(0, 500);
   })();
 
+
   return (
     <main>
       <header>
         <div className="brand-lockup">
           {/* eslint-disable-next-line @next/next/no-img-element -- Vite/Tauri app, not a Next.js route. */}
-          <img src="/crate-os-logo-mark.png" alt="Crate OS" className="brand-logo" />
+          <img src="/crate-os-logo-mark.png" alt="" className="brand-logo" />
           <div>
-            <p className="topline">Local Library Command Center</p>
             <h1>{productName}</h1>
             <p className="product-byline">{productByline}</p>
-            <p className="tagline">{productTagline}</p>
           </div>
         </div>
+        <nav className="tabs" aria-label="Sections">
+          <button
+            type="button"
+            className={view === "lib" ? "tab active" : "tab"}
+            aria-pressed={view === "lib"}
+            onClick={() => setView("lib")}
+          >
+            Library
+          </button>
+          <button type="button" className={view === "builder" ? "tab active" : "tab"}
+            aria-pressed={view === "builder"} onClick={() => setView("builder")}>Crate Builder</button>
+          <button type="button" className={view === "mixes" ? "tab active" : "tab"}
+            aria-pressed={view === "mixes"} onClick={() => setView("mixes")}>GOOD MIXX</button>
+        </nav>
       </header>
 
-      <section className="panel scan-panel">
-        <div className="label">Library Scan</div>
-        <div className="scan-form">
-          <label>
-            <span className="label">Folder</span>
-            <input value={folder} onChange={(event) => setFolder(event.target.value)} />
-          </label>
-          <label>
-            <span className="label">Limit</span>
-            <input
-              inputMode="numeric"
-              placeholder="optional"
-              value={limit}
-              onChange={(event) => setLimit(event.target.value)}
-            />
-          </label>
-          <button type="button" onClick={chooseFolder}>
-            Choose Folder
-          </button>
-          <button type="button" disabled={!folder || isScanning} onClick={scan}>
-            {isScanning ? "Scanning..." : "Scan Library"}
-          </button>
-        </div>
-        <p className="status">
-          {progress
-            ? `${progress.phase}: ${progress.current}/${progress.total}${progress.path ? ` - ${progress.path}` : ""}`
-            : "Native folder picker, SQLite persistence, and scan progress are wired through Tauri."}
-        </p>
-      </section>
+      {view === "builder" ? <PlaylistBuilder tracks={tracks} /> : null}
+      {view === "mixes" ? <DjMixes /> : null}
+      {view === "lib" ? (
+        <>
+          <nav className="app-menu" aria-label="File menu">
+            <div className="menu-group">
+              <button
+                type="button"
+                className="menu-trigger"
+                aria-haspopup="menu"
+                aria-expanded={isFileMenuOpen}
+                onClick={() => setIsFileMenuOpen((open) => !open)}
+              >
+                Export
+              </button>
+              {isFileMenuOpen ? (
+                <div className="menu-popover" role="menu">
+                  <button type="button" role="menuitem" disabled={!summary} onClick={() => exportScan("csv")}>
+                    Export CSV
+                  </button>
+                  <button type="button" role="menuitem" disabled={!summary} onClick={() => exportScan("djprep")}>
+                    DJ prep CSV
+                  </button>
+                  <button type="button" role="menuitem" disabled={!summary} onClick={() => exportScan("m3u")}>
+                    M3U8 playlist
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={!summary || !advancedExportGate.allowed}
+                    onClick={() => exportScan("json")}
+                  >
+                    Export JSON
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={!summary || !advancedExportGate.allowed}
+                    onClick={() => exportScan("live365")}
+                  >
+                    Live365 CSV
+                  </button>
+                  <button type="button" role="menuitem" onClick={openExportsFolder}>
+                    Open exports folder
+                  </button>
+                </div>
+              ) : null}
+            </div>
+            {exportStatus ? <p className="status menu-status">{exportStatus}</p> : null}
+          </nav>
 
-      {summary ? (
-        <section className="stats">
-          <Stat label="Tracks" value={summary.track_count.toLocaleString()} />
-          <Stat label="Size" value={formatBytes(summary.total_bytes)} />
-          <Stat label="Runtime" value={formatRuntime(summary.known_runtime_seconds)} />
-          <Stat label="Unknown" value={summary.unknown_runtime_count.toLocaleString()} />
-        </section>
+          <section className="panel scan-panel">
+            <div className="label">Library scan</div>
+            <div className="scan-form">
+              <label>
+                <span className="label">Folder</span>
+                <input value={folder} onChange={(event) => setFolder(event.target.value)} />
+              </label>
+              <label>
+                <span className="label">Limit</span>
+                <input
+                  inputMode="numeric"
+                  placeholder="optional"
+                  value={limit}
+                  onChange={(event) => setLimit(event.target.value)}
+                />
+              </label>
+              <button type="button" onClick={chooseFolder}>
+                Choose folder
+              </button>
+              <button type="button" disabled={!folder || isScanning} onClick={scan}>
+                {isScanning ? "Scanning..." : "Scan library"}
+              </button>
+            </div>
+            <p className="status">
+              {progress
+                ? `${progress.phase}: ${progress.current}/${progress.total}${progress.path ? ` - ${progress.path}` : ""}`
+                : "Native folder picker, SQLite persistence, and scan progress are wired through Tauri."}
+            </p>
+          </section>
+
+          {summary ? (
+            <section className="stats">
+              <Stat label="Tracks" value={summary.track_count.toLocaleString()} />
+              <Stat label="Size" value={formatBytes(summary.total_bytes)} />
+              <Stat label="Runtime" value={formatRuntime(summary.known_runtime_seconds)} />
+              <Stat label="Unknown" value={summary.unknown_runtime_count.toLocaleString()} />
+            </section>
+          ) : null}
+
+          <section className="panel">
+            <div className="folder-header">
+              <div>
+                <span className="label">Folders</span>
+                <strong>{folderRollups.length.toLocaleString()} crates</strong>
+              </div>
+              <button type="button" className="small-button" onClick={() => selectFolder("all")}>
+                All folders
+              </button>
+            </div>
+            <div className="folder-grid">
+              {folderRollups.map((rollup) => (
+                <button
+                  key={rollup.folder}
+                  type="button"
+                  className={`folder-card ${folderFilter === rollup.folder ? "active" : ""}`}
+                  onClick={() => selectFolder(rollup.folder)}
+                >
+                  <span>{rollup.folder}</span>
+                  <strong>{rollup.trackCount.toLocaleString()} tracks</strong>
+                  <small>
+                    {formatRuntime(rollup.runtimeSeconds)} / {formatBytes(rollup.totalBytes)}
+                  </small>
+                  <small>
+                    {rollup.missingMetadataCount} metadata gaps | {rollup.newCount} new |{" "}
+                    {rollup.changedCount} changed | {rollup.missingCount} missing
+                  </small>
+                </button>
+              ))}
+            </div>
+            <div className="toolbar">
+              <label>
+                <span className="label">Search tracks</span>
+                <input
+                  placeholder="artist, title, album, path"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+              </label>
+              <label>
+                <span className="label">Status</span>
+                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="bulk-editor">
+              <div>
+                <span className="label">Bulk edit</span>
+                <strong>{selectedPaths.size.toLocaleString()} selected</strong>
+              </div>
+              <input
+                placeholder="artist"
+                value={bulkForm.artist}
+                onChange={(event) => setBulkForm({ ...bulkForm, artist: event.target.value })}
+              />
+              <input
+                placeholder="album"
+                value={bulkForm.album}
+                onChange={(event) => setBulkForm({ ...bulkForm, album: event.target.value })}
+              />
+              <input
+                placeholder="genre"
+                value={bulkForm.genre}
+                onChange={(event) => setBulkForm({ ...bulkForm, genre: event.target.value })}
+              />
+              <select
+                value={bulkForm.proposed_bucket}
+                onChange={(event) => setBulkForm({ ...bulkForm, proposed_bucket: event.target.value })}
+              >
+                <option value="">bucket</option>
+                {bucketOptions.map((bucket) => (
+                  <option key={bucket} value={bucket}>
+                    {bucket}
+                  </option>
+                ))}
+              </select>
+              <button type="button" disabled={selectedPaths.size === 0} onClick={applyBulkEdit}>
+                Apply
+              </button>
+              <button
+                type="button"
+                disabled={selectedPaths.size === 0 || isWritingTags}
+                onClick={writeSelectedTags}
+              >
+                {isWritingTags ? "Writing..." : "Write tags"}
+              </button>
+              <button type="button" disabled={!summary || isRestoringTags} onClick={restoreLatestTagBackup}>
+                {isRestoringTags ? "Restoring..." : "Restore backup"}
+              </button>
+            </div>
+            {metadataStatus ? <p className="status">{metadataStatus}</p> : null}
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th className="select-cell">
+                      <input
+                        type="checkbox"
+                        aria-label="Select all visible tracks"
+                        checked={
+                          filteredTracks.length > 0 &&
+                          filteredTracks.every((track) => selectedPaths.has(track.path))
+                        }
+                        onChange={toggleVisibleTracks}
+                      />
+                    </th>
+                    <th>Artist</th>
+                    <th>Title</th>
+                    <th>Album</th>
+                    <th>Genre</th>
+                    <th>Year</th>
+                    <th>Runtime</th>
+                    <th>Bucket</th>
+                    <th>Readiness</th>
+                    <th>Status</th>
+                    <th>Tags</th>
+                    <th>Save</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTracks.map((track) => (
+                    <tr key={track.path}>
+                      <td className="select-cell">
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${track.title || track.filename}`}
+                          checked={selectedPaths.has(track.path)}
+                          onChange={() => toggleTrack(track.path)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={track.artist}
+                          placeholder="artist"
+                          onChange={(event) => updateTrackField(track.path, "artist", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={track.title}
+                          placeholder={track.filename}
+                          onChange={(event) => updateTrackField(track.path, "title", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={track.album}
+                          placeholder="album"
+                          onChange={(event) => updateTrackField(track.path, "album", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={track.genre}
+                          placeholder="genre"
+                          onChange={(event) => updateTrackField(track.path, "genre", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={track.year}
+                          placeholder="year"
+                          onChange={(event) => updateTrackField(track.path, "year", event.target.value)}
+                        />
+                      </td>
+                      <td>{formatRuntime(track.duration_seconds)}</td>
+                      <td>
+                        <select
+                          value={track.proposed_bucket}
+                          aria-label="Bucket"
+                          onChange={(event) =>
+                            updateTrackField(track.path, "proposed_bucket", event.target.value)
+                          }
+                        >
+                          {bucketOptions.map((bucket) => (
+                            <option key={bucket} value={bucket}>
+                              {bucket}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <select
+                          value={track.live365_readiness}
+                          aria-label="Readiness"
+                          onChange={(event) =>
+                            updateTrackField(track.path, "live365_readiness", event.target.value)
+                          }
+                        >
+                          {readinessOptions.map((readiness) => (
+                            <option key={readiness} value={readiness}>
+                              {readiness}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className={`status-pill ${track.scan_status}`}>{track.scan_status}</td>
+                      <td className={track.metadata_dirty ? "dirty-pill" : "status-pill"}>
+                        {track.metadata_dirty ? "dirty" : track.tag_write_status}
+                      </td>
+                      <td>
+                        <button type="button" className="small-button" onClick={() => saveTrack(track)}>
+                          Save
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
       ) : null}
-
-      <section className="panel gate">
-        <div>
-          <div className="label">Broadcast Toolkit</div>
-          <strong>{gate.allowed ? "Unlocked" : "Supporter action locked"}</strong>
-          <p>{gate.allowed ? "Broadcast writes are available." : gate.unlockMessage}</p>
-        </div>
-        <button disabled>Apply Live365 Upload</button>
-      </section>
-
-      <section className="panel export-panel">
-        <div>
-          <div className="label">Exports</div>
-          <strong>Station package prep</strong>
-          <p className="status">
-            Exports use selected tracks first, otherwise the active folder and status filters. JSON
-            backup and Live365-ready exports stay locked until supporter.
-          </p>
-          {exportStatus ? <p className="status">{exportStatus}</p> : null}
-        </div>
-        <button type="button" disabled={!summary} onClick={() => exportScan("csv")}>
-          Export CSV
-        </button>
-        <button type="button" disabled={!summary} onClick={() => exportScan("djprep")}>
-          DJ Prep CSV
-        </button>
-        <button type="button" disabled={!summary} onClick={() => exportScan("m3u")}>
-          M3U8 Playlist
-        </button>
-        <button
-          type="button"
-          disabled={!summary || !advancedExportGate.allowed}
-          onClick={() => exportScan("json")}
-        >
-          Export JSON
-        </button>
-        <button
-          type="button"
-          disabled={!summary || !advancedExportGate.allowed}
-          onClick={() => exportScan("live365")}
-        >
-          Live365 CSV
-        </button>
-        <button type="button" onClick={openExportsFolder}>
-          Open Exports
-        </button>
-      </section>
-
-      <section className="panel">
-        <div className="folder-header">
-          <div>
-            <span className="label">Folders</span>
-            <strong>{folderRollups.length.toLocaleString()} crates</strong>
-          </div>
-          <button type="button" className="small-button" onClick={() => selectFolder("all")}>
-            All Folders
-          </button>
-        </div>
-        <div className="folder-grid">
-          {folderRollups.map((folder) => (
-            <button
-              key={folder.folder}
-              type="button"
-              className={`folder-card ${folderFilter === folder.folder ? "active" : ""}`}
-              onClick={() => selectFolder(folder.folder)}
-            >
-              <span>{folder.folder}</span>
-              <strong>{folder.trackCount.toLocaleString()} tracks</strong>
-              <small>
-                {formatRuntime(folder.runtimeSeconds)} / {formatBytes(folder.totalBytes)}
-              </small>
-              <small>
-                {folder.missingMetadataCount} metadata gaps | {folder.newCount} new |{" "}
-                {folder.changedCount} changed | {folder.missingCount} missing
-              </small>
-            </button>
-          ))}
-        </div>
-        <div className="toolbar">
-          <label>
-            <span className="label">Search Tracks</span>
-            <input
-              placeholder="artist, title, album, path"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </label>
-          <label>
-            <span className="label">Status</span>
-            <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="bulk-editor">
-          <div>
-            <span className="label">Bulk Edit</span>
-            <strong>{selectedPaths.size.toLocaleString()} selected</strong>
-          </div>
-          <input
-            placeholder="artist"
-            value={bulkForm.artist}
-            onChange={(event) => setBulkForm({ ...bulkForm, artist: event.target.value })}
-          />
-          <input
-            placeholder="album"
-            value={bulkForm.album}
-            onChange={(event) => setBulkForm({ ...bulkForm, album: event.target.value })}
-          />
-          <input
-            placeholder="genre"
-            value={bulkForm.genre}
-            onChange={(event) => setBulkForm({ ...bulkForm, genre: event.target.value })}
-          />
-          <select
-            value={bulkForm.proposed_bucket}
-            onChange={(event) => setBulkForm({ ...bulkForm, proposed_bucket: event.target.value })}
-          >
-            <option value="">bucket</option>
-            {bucketOptions.map((bucket) => (
-              <option key={bucket} value={bucket}>
-                {bucket}
-              </option>
-            ))}
-          </select>
-          <button type="button" disabled={selectedPaths.size === 0} onClick={applyBulkEdit}>
-            Apply
-          </button>
-          <button
-            type="button"
-            disabled={selectedPaths.size === 0 || isWritingTags}
-            onClick={writeSelectedTags}
-          >
-            {isWritingTags ? "Writing..." : "Write Tags"}
-          </button>
-          <button
-            type="button"
-            disabled={!summary || isRestoringTags}
-            onClick={restoreLatestTagBackup}
-          >
-            {isRestoringTags ? "Restoring..." : "Restore Backup"}
-          </button>
-        </div>
-        {metadataStatus ? <p className="status">{metadataStatus}</p> : null}
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th className="select-cell">
-                  <input
-                    type="checkbox"
-                    checked={
-                      filteredTracks.length > 0 &&
-                      filteredTracks.every((track) => selectedPaths.has(track.path))
-                    }
-                    onChange={toggleVisibleTracks}
-                  />
-                </th>
-                <th>Artist</th>
-                <th>Title</th>
-                <th>Album</th>
-                <th>Genre</th>
-                <th>Year</th>
-                <th>Runtime</th>
-                <th>Bucket</th>
-                <th>Readiness</th>
-                <th>Status</th>
-                <th>Tags</th>
-                <th>Save</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTracks.map((track) => (
-                <tr key={track.path}>
-                  <td className="select-cell">
-                    <input
-                      type="checkbox"
-                      checked={selectedPaths.has(track.path)}
-                      onChange={() => toggleTrack(track.path)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={track.artist}
-                      placeholder="artist"
-                      onChange={(event) => updateTrackField(track.path, "artist", event.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={track.title}
-                      placeholder={track.filename}
-                      onChange={(event) => updateTrackField(track.path, "title", event.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={track.album}
-                      placeholder="album"
-                      onChange={(event) => updateTrackField(track.path, "album", event.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={track.genre}
-                      placeholder="genre"
-                      onChange={(event) => updateTrackField(track.path, "genre", event.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={track.year}
-                      placeholder="year"
-                      onChange={(event) => updateTrackField(track.path, "year", event.target.value)}
-                    />
-                  </td>
-                  <td>{formatRuntime(track.duration_seconds)}</td>
-                  <td>
-                    <select
-                      value={track.proposed_bucket}
-                      onChange={(event) =>
-                        updateTrackField(track.path, "proposed_bucket", event.target.value)
-                      }
-                    >
-                      {bucketOptions.map((bucket) => (
-                        <option key={bucket} value={bucket}>
-                          {bucket}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={track.live365_readiness}
-                      onChange={(event) =>
-                        updateTrackField(track.path, "live365_readiness", event.target.value)
-                      }
-                    >
-                      {readinessOptions.map((readiness) => (
-                        <option key={readiness} value={readiness}>
-                          {readiness}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className={`status-pill ${track.scan_status}`}>{track.scan_status}</td>
-                  <td className={track.metadata_dirty ? "dirty-pill" : "status-pill"}>
-                    {track.metadata_dirty ? "dirty" : track.tag_write_status}
-                  </td>
-                  <td>
-                    <button type="button" className="small-button" onClick={() => saveTrack(track)}>
-                      Save
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
     </main>
   );
 }

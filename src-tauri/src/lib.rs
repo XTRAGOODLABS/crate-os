@@ -1,4 +1,11 @@
 use chrono::Utc;
+mod dj_mixes;
+
+use dj_mixes::{
+    dj_mixes_status, import_legacy_dj_mixes_data, open_dj_mixes_browser,
+    open_traktor_link_installer, open_traktor_link_remover, start_dj_mixes, stop_dj_mixes,
+    DjMixesState,
+};
 use lofty::config::WriteOptions;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::tag::{Accessor, Tag};
@@ -90,7 +97,6 @@ struct BulkMetadataUpdate {
 #[derive(Debug, Deserialize)]
 struct ExportArgs {
     format: String,
-    tier: String,
     paths: Option<Vec<String>>,
     folder: Option<String>,
     status: Option<String>,
@@ -99,6 +105,13 @@ struct ExportArgs {
 #[derive(Debug, Serialize)]
 struct ExportResponse {
     path: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SavePlaylistArgs {
+    name: String,
+    paths: Vec<String>,
+    format: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -161,13 +174,6 @@ fn latest_scan(app: AppHandle) -> Result<LatestScanResponse, String> {
 
 #[tauri::command]
 fn export_latest_scan(app: AppHandle, args: ExportArgs) -> Result<ExportResponse, String> {
-    if matches!(args.format.as_str(), "json" | "live365")
-        && args.tier != "supporter"
-        && args.tier != "pro"
-    {
-        return Err("Advanced exports require the supporter tier.".to_string());
-    }
-
     let conn = open_database(&app)?;
     init_database(&conn)?;
     let summary =
@@ -210,6 +216,56 @@ fn export_latest_scan(app: AppHandle, args: ExportArgs) -> Result<ExportResponse
         }
     };
 
+    Ok(ExportResponse {
+        path: path.to_string_lossy().to_string(),
+    })
+}
+
+#[tauri::command]
+fn save_playlist(app: AppHandle, args: SavePlaylistArgs) -> Result<ExportResponse, String> {
+    let name = args.name.trim();
+    if name.is_empty() {
+        return Err("Give the playlist a name before saving.".to_string());
+    }
+    if args.paths.is_empty() {
+        return Err("Add at least one track to the playlist.".to_string());
+    }
+    let conn = open_database(&app)?;
+    init_database(&conn)?;
+    let summary = latest_summary(&conn)?
+        .ok_or_else(|| "Scan a folder before building a playlist.".to_string())?;
+    let by_path = tracks_for_scan(&conn, &summary.scan_id)?
+        .into_iter()
+        .map(|track| (track.path.clone(), track))
+        .collect::<HashMap<_, _>>();
+    let tracks = args
+        .paths
+        .iter()
+        .filter_map(|path| by_path.get(path).cloned())
+        .filter(|track| track.scan_status != "missing")
+        .collect::<Vec<_>>();
+    if tracks.is_empty() {
+        return Err("None of the playlist tracks are available in the latest scan.".to_string());
+    }
+    let playlist_dir = exports_dir(&app)?.join("playlists");
+    fs::create_dir_all(&playlist_dir).map_err(|error| error.to_string())?;
+    let stamp = Utc::now().format("%Y%m%d-%H%M%S");
+    let slug = match slugify(name) {
+        slug if slug.is_empty() => "playlist".to_string(),
+        slug => slug,
+    };
+    let path = match args.format.as_str() {
+        "csv" => {
+            let path = playlist_dir.join(format!("{slug}-{stamp}.csv"));
+            write_csv_export(&path, &tracks)?;
+            path
+        }
+        _ => {
+            let path = playlist_dir.join(format!("{slug}-{stamp}.m3u8"));
+            write_m3u_export(&path, &tracks)?;
+            path
+        }
+    };
     Ok(ExportResponse {
         path: path.to_string_lossy().to_string(),
     })
@@ -1194,19 +1250,53 @@ fn open_path(path: &Path) -> Result<(), String> {
     }
 }
 
+fn open_url(url: &str) -> Result<(), String> {
+    let status = if cfg!(target_os = "macos") {
+        Command::new("open").arg(url).status()
+    } else if cfg!(target_os = "windows") {
+        Command::new("cmd").args(["/C", "start", url]).status()
+    } else {
+        Command::new("xdg-open").arg(url).status()
+    }
+    .map_err(|error| error.to_string())?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err("Could not open Live365 dashboard.".to_string())
+    }
+}
+
 pub fn run() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
+        .manage(DjMixesState::default())
         .invoke_handler(tauri::generate_handler![
+            dj_mixes_status,
+            start_dj_mixes,
+            stop_dj_mixes,
+            import_legacy_dj_mixes_data,
+            open_dj_mixes_browser,
+            open_traktor_link_installer,
+            open_traktor_link_remover,
             choose_folder,
             latest_scan,
             scan_library,
             update_track_metadata,
             bulk_update_tracks,
             export_latest_scan,
+            save_playlist,
             open_exports_folder,
             write_tags_to_files,
             restore_latest_tag_backup
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running Crate OS");
+        .build(tauri::generate_context!())
+        .expect("error while building Crate OS");
+    app.run(|app, event| {
+        if matches!(
+            event,
+            tauri::RunEvent::Exit | tauri::RunEvent::ExitRequested { .. }
+        ) {
+            dj_mixes::stop_on_exit(app);
+        }
+    });
 }

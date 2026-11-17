@@ -1,0 +1,45 @@
+name: Crate OS DJ Edition macOS builds
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/crate-os-desktop/**"
+      - ".github/workflows/crate-os-dj-edition.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            artifact: apple-silicon
+          - runner: macos-15-intel
+            artifact: intel
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        working-directory: apps/crate-os-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/crate-os-desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npm run test:dj-mixes
+      - run: npm run dj-mixes:build
+      - run: npm run build
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - run: npm run tauri:build:app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crate-os-dj-edition-${{ matrix.artifact }}
+          path: apps/crate-os-desktop/src-tauri/target/release/bundle/macos/*.app
+          if-no-files-found: error
