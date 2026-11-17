@@ -134,6 +134,21 @@ fn status_from(connection: Option<DjMixesConnection>) -> DjMixesStatus {
 
 #[tauri::command]
 pub fn dj_mixes_status(state: State<'_, DjMixesState>) -> Result<DjMixesStatus, String> {
+    // Only report the helper this Crate OS started. Anything else on the port (for example a
+    // helper left over from an older build) must not be shown, so the app starts its own.
+    if state
+        .child
+        .lock()
+        .map_err(|_| "DJ Mixes process state is unavailable.".to_string())?
+        .is_none()
+    {
+        return Ok(DjMixesStatus {
+            running: false,
+            lan_mode: false,
+            local_url: None,
+            lan_url: None,
+        });
+    }
     let connection = state
         .connection
         .lock()
@@ -310,7 +325,7 @@ pub fn start_dj_mixes(
             // A helper left behind by a crashed Crate OS stops itself within a few seconds.
             if !wait_for_port_release() {
                 return Err(format!(
-                    "Port {PORT} is already used by another process. Quit it, then press Reconnect."
+                    "An older GOOD MIXX helper is still running on port {PORT}. Open Activity Monitor, search \"dj-mixes-server\", quit it, then press Reconnect."
                 ));
             }
         }
