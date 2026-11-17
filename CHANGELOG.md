@@ -1,5 +1,7 @@
 # Changelog
 
+Crate OS began inside the Murphys Community Radio project in June 2026 and was split out for the DJ Edition. The Git history keeps the Crate OS steps from that project, leaving out the radio station's own publishing tools; personal folder paths in older steps were replaced with `<you>` / `<drive>`.
+
 ## 0.2.0-beta.1
 
 - Opens on the local music library and preserves CSV, DJ-prep CSV, M3U8, and JSON exports.
@@ -16,3 +18,7 @@
 - Switching between Mac-only and iPad/Portal modes stops the old helper cleanly and confirms the new one answers.
 - Legacy import also brings over Traktor play history. QUIT and the start screen are hidden inside Crate OS.
 - Crate Builder move up/down stays correct when a track went missing after a rescan.
+
+## 0.1.0 — June 20, 2026
+
+- First Crate OS desktop app: library scanning with audio runtime, metadata editing, DJ exports (CSV, DJ-prep CSV, M3U8, JSON), audio tag sync and restore, Crate OS branding.

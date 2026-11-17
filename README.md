@@ -1,4 +1,14 @@
+<div align="center">
+
+<img src="public/crate-os-logo.png" width="360" alt="Crate OS">
+
 # Crate OS DJ Edition
+
+### Your music library, your crates, and GOOD MIXX in one Mac app.
+
+From **XTRA GOOD LABS** · [**Download for Mac**](https://github.com/XTRAGOODLABS/crate-os/releases/latest) · [**Changelog**](CHANGELOG.md) · [**Troubleshooting**](TROUBLESHOOTING.md)
+
+</div>
 
 Crate OS is a local-first macOS music-library and DJ workflow application built with Tauri 2, React, TypeScript, Rust, SQLite, and the bundled GOOD MIXX sidecar.
 
@@ -56,3 +66,12 @@ Radio station (Live365) publishing tools are not part of this repository. Crate 
 ## Release status
 
 See [RELEASE-NOTES-v0.2.0-beta.1.md](RELEASE-NOTES-v0.2.0-beta.1.md), [CHANGELOG.md](CHANGELOG.md), and [TROUBLESHOOTING.md](TROUBLESHOOTING.md). Local compilation is distinct from Apple code signing and notarization.
+
+## Credits
+
+GOOD MIXX is based on an original idea by **DJ Aquarobotics**. Thanks to ckryptickunal's
+[djay-pro-mcp](https://github.com/ckryptickunal/djay-pro-mcp) for inspiration. Traktor link based on
+[traktor-api-client](https://github.com/ErikMinekus/traktor-api-client) by Erik Minekus (MIT). Fonts: IBM Plex (OFL).
+See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Built by XTRA GOOD LABS with Codex and Claude.
+
+Project code is not yet under an open-source license; all rights reserved until one is chosen.

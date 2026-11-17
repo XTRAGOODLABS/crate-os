@@ -6,3 +6,6 @@ src-tauri/target/
 dj-mixes-runtime/build/
 dj-mixes-runtime/dist/
 src-tauri/binaries/dj-mixes-server-*
+.DS_Store
+*.log
+__pycache__/
