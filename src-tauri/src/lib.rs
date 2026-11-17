@@ -271,6 +271,12 @@ fn save_playlist(app: AppHandle, args: SavePlaylistArgs) -> Result<ExportRespons
     })
 }
 
+/// Opens the XTRA GOOD LABS Buy Me a Coffee page in the default browser.
+#[tauri::command]
+fn open_support_page() -> Result<(), String> {
+    open_url("https://buymeacoffee.com/xtragoodlabs")
+}
+
 #[tauri::command]
 fn open_exports_folder(app: AppHandle) -> Result<(), String> {
     let export_dir = exports_dir(&app)?;
@@ -1263,7 +1269,7 @@ fn open_url(url: &str) -> Result<(), String> {
     if status.success() {
         Ok(())
     } else {
-        Err("Could not open Live365 dashboard.".to_string())
+        Err(format!("Could not open {url}."))
     }
 }
 
@@ -1286,6 +1292,7 @@ pub fn run() {
             export_latest_scan,
             save_playlist,
             open_exports_folder,
+            open_support_page,
             write_tags_to_files,
             restore_latest_tag_backup
         ])

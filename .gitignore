@@ -9,3 +9,4 @@ src-tauri/binaries/dj-mixes-server-*
 .DS_Store
 *.log
 __pycache__/
+dist-release/

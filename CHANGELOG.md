@@ -12,6 +12,7 @@ Crate OS began inside the Murphys Community Radio project in June 2026 and was s
 - Defaults DJ Mixes to localhost. Optional iPad/Meta Portal access uses an explicit LAN mode with a generated access token.
 - Stops the managed DJ Mixes process when Crate OS exits and reports startup failures from an application log.
 - Radio station (Live365) publishing tools are not part of Crate OS DJ Edition. The Live365-ready CSV export and readiness labels stay.
+- Adds a Buy Me a Coffee link.
 - Adds Apple Silicon and Intel GitHub Actions build jobs.
 - One Traktor link now feeds both the standalone GOOD MIXX app and Crate OS; the helper patches Traktor's own D2 file instead of shipping Native Instruments' copy.
 - The GOOD MIXX helper refuses requests from other websites (DNS-rebinding and cross-site POST protection) and shuts itself down if Crate OS crashes.

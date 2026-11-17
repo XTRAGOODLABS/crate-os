@@ -6,7 +6,7 @@
 
 ### Your music library, your crates, and GOOD MIXX in one Mac app.
 
-From **XTRA GOOD LABS** · [**Download for Mac**](https://github.com/XTRAGOODLABS/crate-os/releases/latest) · [**Changelog**](CHANGELOG.md) · [**Troubleshooting**](TROUBLESHOOTING.md)
+From **XTRA GOOD LABS** · [**Buy me a coffee ☕**](https://buymeacoffee.com/xtragoodlabs) · [**Download for Mac**](https://github.com/XTRAGOODLABS/crate-os/releases/latest) · [**Changelog**](CHANGELOG.md) · [**Troubleshooting**](TROUBLESHOOTING.md)
 
 </div>
 
@@ -66,6 +66,10 @@ Radio station (Live365) publishing tools are not part of this repository. Crate 
 ## Release status
 
 See [RELEASE-NOTES-v0.2.0-beta.1.md](RELEASE-NOTES-v0.2.0-beta.1.md), [CHANGELOG.md](CHANGELOG.md), and [TROUBLESHOOTING.md](TROUBLESHOOTING.md). Local compilation is distinct from Apple code signing and notarization.
+
+## Support
+
+If Crate OS or GOOD MIXX helps your sets, you can [buy XTRA GOOD LABS a coffee](https://buymeacoffee.com/xtragoodlabs).
 
 ## Credits
 

@@ -782,3 +782,5 @@ tbody select {
 .playlist-row-actions button { padding: 6px 8px; }
 .playlist-save-actions { margin-top: 14px; }
 @media (max-width: 850px) { .playlist-builder-grid { grid-template-columns: 1fr; } .playlist-builder-head { align-items: stretch; flex-direction: column; } .playlist-builder-head label { min-width: 0; } }
+
+.tab.support { margin-left: auto; opacity: 0.85; }

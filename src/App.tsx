@@ -397,6 +397,8 @@ export default function App() {
             aria-pressed={view === "builder"} onClick={() => setView("builder")}>Crate Builder</button>
           <button type="button" className={view === "mixes" ? "tab active" : "tab"}
             aria-pressed={view === "mixes"} onClick={() => setView("mixes")}>GOOD MIXX</button>
+          <button type="button" className="tab support" title="Support XTRA GOOD LABS"
+            onClick={() => void invoke("open_support_page")}>☕ Buy me a coffee</button>
         </nav>
       </header>
 
