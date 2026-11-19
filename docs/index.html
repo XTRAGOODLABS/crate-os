@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crate OS DJ Edition</title>
+<meta name="description" content="Free Mac app for DJs: scan and clean up your music library, build crates in play order, and use GOOD MIXX to remember the blends that work.">
+<meta property="og:title" content="Crate OS DJ Edition: your library, your crates, and GOOD MIXX">
+<meta property="og:description" content="Free Mac app for DJs: scan and clean up your music library, build crates in play order, and use GOOD MIXX to remember the blends that work.">
+<meta property="og:image" content="https://xtragoodlabs.github.io/crate-os/screenshots/builder.jpg">
+<meta property="og:url" content="https://xtragoodlabs.github.io/crate-os/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="screenshots/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d0c; --panel:#141816; --line:#262c29; --ink:#eef0f4; --muted:#9aa1ad;
+  --accent:#d9a441; --accent2:#f0cf8a; --on-accent:#1a0d03;
+  --font-display:"Anton","Impact","Arial Narrow",sans-serif;
+  --font-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
+a{color:inherit} img{max-width:100%;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.label{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header{border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:40px;height:40px;border-radius:9px}
+.brand b{font-family:var(--font-display);font-size:24px;font-weight:400;letter-spacing:.02em}
+.hero{padding:56px 0 40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(44px,7vw,76px);line-height:1;margin:14px 0 18px;text-wrap:balance;letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{color:#c9cdd5;max-width:34em;margin:0 0 26px}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;border-radius:10px;padding:15px 22px;font-size:16px;border:1px solid var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:0 0 28px color-mix(in srgb,var(--accent) 35%,transparent)}
+.btn.primary:hover{filter:brightness(1.08)} .btn.ghost{background:var(--panel)} .btn.ghost:hover{border-color:var(--muted)}
+.btn:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
+.fine{margin-top:12px;font-size:14px;color:var(--muted)}
+.shot{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.cap{margin-top:10px;color:var(--muted);font-size:14px}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--font-display);font-weight:400;font-size:clamp(30px,4.4vw,42px);line-height:1.05;margin:8px 0 22px;text-wrap:balance;letter-spacing:.01em}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{margin:6px 0 6px;font-size:18px} .card p{margin:0;color:#c9cdd5;font-size:15px}
+.shots2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+ol.steps li::before{content:counter(s);font-family:var(--font-display);font-size:30px;line-height:1;color:var(--accent)}
+ol.steps b{display:block} ol.steps span{color:#c9cdd5;font-size:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+ul.req{margin:0;padding-left:18px;color:#c9cdd5} ul.req li{margin:4px 0}
+.ask{background:linear-gradient(0deg,color-mix(in srgb,var(--accent) 10%,transparent),color-mix(in srgb,var(--accent) 10%,transparent)),var(--panel);border:1px solid color-mix(in srgb,var(--accent) 50%,transparent);border-radius:16px;padding:26px}
+.ask p{margin:0 0 18px;max-width:40em}
+code{font-family:var(--font-mono);font-size:13px;background:#0c0e12;border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+footer{padding:26px 0 40px;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+@media (max-width:860px){.hero,.grid3,.two,.shots2{grid-template-columns:1fr}.hero{padding-top:36px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand"><img src="screenshots/icon.png" alt="CRATE OS icon"><b>CRATE OS</b></div>
+  <span class="label">Free beta · Mac</span>
+</div></header>
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="label">For DJs on Mac · works with DJAY + TRAKTOR</div>
+      <h1>Your music. Your <em>crates.</em></h1>
+      <p class="lede">Crate OS scans your music library, helps you clean up the tags, and lets you build crates in play order. <b>GOOD MIXX</b> comes built in, so it remembers the blends that work and suggests what to play next.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/XTRAGOODLABS/crate-os/releases/download/v0.2.0-beta.1/Crate-OS-DJ-Edition-0.2.0-beta.1-macOS-arm64.zip">Download for Mac</a>
+        <a class="btn ghost" href="#install">How to install</a>
+      </div>
+      <p class="fine">Free beta. No account. Your library never leaves your Mac.</p>
+    </div>
+    <div class="shot"><img src="screenshots/builder.jpg" alt="Crate OS Crate Builder with a six-track crate in play order (demo library)"></div>
+  </div>
+  <section>
+    <div class="label">What it does</div>
+    <h2>One app for the music you actually play.</h2>
+    <div class="grid3"><div class="card"><div class="label">01 · Scan</div><h3>Know your library</h3><p>Scans your folders and shows tracks, size, runtime, and what's missing tags, folder by folder.</p></div>
+<div class="card"><div class="label">02 · Clean</div><h3>Fix your tags</h3><p>Edit artist, title, genre and year in place, or bulk-edit a selection. A backup lets you undo tag writes.</p></div>
+<div class="card"><div class="label">03 · Build</div><h3>Crate Builder</h3><p>Search your library, add tracks, set the play order, and save the crate as M3U8 or CSV.</p></div></div>
+  </section>
+  <section><div class="label">What it looks like</div><h2>Your library, at a glance.</h2><div class="shots2"><figure style="margin:0"><div class="shot"><img src="screenshots/library.jpg" alt="Crate OS library view with track count, size, runtime and folders (demo library)" loading="lazy"></div><figcaption class="cap">Library overview. Shown with a demo library.</figcaption></figure>
+<figure style="margin:0"><div class="shot"><img src="screenshots/tracks.jpg" alt="Crate OS track table with editable artist, title, album, genre and year (demo library)" loading="lazy"></div><figcaption class="cap">Edit tags right in the track list.</figcaption></figure></div></section>
+  <section><div class="label">Also inside</div><h2>GOOD MIXX, built in.</h2><div class="grid3"><div class="card"><div class="label">GOOD MIXX</div><h3>Remembers good blends</h3><p>Follows DJAY or TRAKTOR, saves blends with one tap, and suggests what to play next.</p></div>
+<div class="card"><div class="label">Exports</div><h3>Take it anywhere</h3><p>CSV, DJ-prep CSV, M3U8 and JSON exports.</p></div>
+<div class="card"><div class="label">Second screen</div><h3>iPad or Portal</h3><p>Optional protected link so an iPad or Meta Portal can show GOOD MIXX.</p></div></div></section>
+  <section id="install">
+    <div class="label">Install · about 2 minutes</div>
+    <h2>Getting it running</h2>
+    <div class="two">
+      <ol class="steps"><li><div><b>Download and unzip</b><span>Grab the Crate OS zip from the download button and double-click it.</span></div></li>
+<li><div><b>Drag it to Applications</b><span>Just like any other Mac app.</span></div></li>
+<li><div><b>Open it the first time</b><span>This beta isn't from the App Store yet, so Control-click <b style="display:inline">Crate OS</b>, choose Open, then confirm.</span></div></li>
+<li><div><b>Point it at your music</b><span>Choose your music folder and hit Scan library.</span></div></li>
+<li><div><b>Optional: hook up your DJ app</b><span>For GOOD MIXX key readings, allow Crate OS under Privacy &amp; Security → Accessibility. For TRAKTOR, use <b style="display:inline">Add Traktor link</b> in GOOD MIXX.</span></div></li></ol>
+      <div><div class="card"><div class="label">You'll need</div><ul class="req"><li>An Apple Silicon Mac (M-series)</li>
+<li>Your music in a folder on that Mac</li>
+<li>Optional: DJAY Pro or TRAKTOR Pro 3/4 for GOOD MIXX</li>
+<li>No Python, Terminal or account needed</li></ul>
+      <p class="fine" style="margin-top:14px">Stuck? The <a href="https://github.com/XTRAGOODLABS/crate-os/blob/main/RELEASE-NOTES-v0.2.0-beta.1.md">full install guide</a> has every detail.</p></div></div>
+    </div>
+  </section>
+  <section>
+    <div class="ask">
+      <div class="label" style="color:var(--accent)">Looking for testers</div>
+      <h2 style="margin-top:6px">Point it at your library. Tell me what broke.</h2>
+      <p>I'm looking for Mac DJs to scan their real library with Crate OS and tell me what works, what's confusing, and what needs fixing. Rough notes are perfect.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/XTRAGOODLABS/crate-os/releases/download/v0.2.0-beta.1/Crate-OS-DJ-Edition-0.2.0-beta.1-macOS-arm64.zip">Download for Mac</a>
+        <a class="btn ghost" href="https://www.instagram.com/djhellojoey/">DM @djhellojoey</a>
+        <a class="btn ghost" href="https://github.com/XTRAGOODLABS/crate-os/issues">Report a bug</a>
+      </div>
+      <p class="fine">Easiest way to reach me: DM <b>@djhellojoey</b> on Instagram.</p>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap">Crate OS is made by XTRA GOOD LABS. GOOD MIXX is based on an original idea by DJ Aquarobotics. djay is a trademark of Algoriddim and Traktor of Native Instruments; Crate OS is an independent tool, not affiliated with either. Screenshots use a demo library. <a href="https://buymeacoffee.com/xtragoodlabs">Buy me a coffee ☕</a></div></footer>
+</body>
+</html>
