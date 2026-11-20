@@ -380,7 +380,7 @@ export default function App() {
           {/* eslint-disable-next-line @next/next/no-img-element -- Vite/Tauri app, not a Next.js route. */}
           <img src="/crate-os-logo-mark.png" alt="" className="brand-logo" />
           <div>
-            <h1>{productName}</h1>
+            <h1>{productName}™</h1>
             <p className="product-byline">{productByline}</p>
           </div>
         </div>
@@ -396,7 +396,7 @@ export default function App() {
           <button type="button" className={view === "builder" ? "tab active" : "tab"}
             aria-pressed={view === "builder"} onClick={() => setView("builder")}>Crate Builder</button>
           <button type="button" className={view === "mixes" ? "tab active" : "tab"}
-            aria-pressed={view === "mixes"} onClick={() => setView("mixes")}>GOOD MIXX</button>
+            aria-pressed={view === "mixes"} onClick={() => setView("mixes")}>GOOD MIXX™</button>
           <button type="button" className="tab support" title="Support XTRA GOOD LABS"
             onClick={() => void invoke("open_support_page")}>☕ Buy me a coffee</button>
         </nav>

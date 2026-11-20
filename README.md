@@ -2,7 +2,7 @@
 
 <img src="public/crate-os-logo.png" width="360" alt="Crate OS">
 
-# Crate OS DJ Edition
+# Crate OS™ DJ Edition
 
 ### Your music library, your crates, and GOOD MIXX in one Mac app.
 
@@ -79,3 +79,7 @@ GOOD MIXX is based on an original idea by **DJ Aquarobotics**. Thanks to ckrypti
 See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Built by XTRA GOOD LABS with Codex and Claude.
 
 Project code is not yet under an open-source license; all rights reserved until one is chosen.
+
+---
+
+GOOD MIXX™, Spin Deck™, Crate OS™ and Beatdeck™ are trademarks of XTRA GOOD LABS.
