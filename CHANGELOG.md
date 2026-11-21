@@ -2,6 +2,11 @@
 
 Crate OS began inside the Murphys Community Radio project in June 2026 and was split out for the DJ Edition. The Git history keeps the Crate OS steps from that project, leaving out the radio station's own publishing tools; personal folder paths in older steps were replaced with `<you>` / `<drive>`.
 
+## 0.2.0-beta.2
+
+- Adds a **Report a problem** button next to Buy me a coffee. It opens the Crate OS bug form on GitHub with the version, your Mac and recent errors already filled in; nothing is sent unless you press Submit on GitHub.
+- Keeps a small error log in the app's data folder (`logs/crate-os-errors.log`) with your user name hidden in folder paths. Window errors, failed actions and crashes are noted there.
+
 ## 0.2.0-beta.1
 
 - Opens on the local music library and preserves CSV, DJ-prep CSV, M3U8, and JSON exports.
