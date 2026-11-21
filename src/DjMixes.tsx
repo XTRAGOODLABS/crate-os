@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./lib/errorLog";
 import { useEffect, useState } from "react";
 
 type DjMixesStatus = {

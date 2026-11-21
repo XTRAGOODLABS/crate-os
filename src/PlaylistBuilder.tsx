@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./lib/errorLog";
 import { useMemo, useState } from "react";
 
 type PlaylistTrack = {

@@ -1,5 +1,6 @@
 use chrono::Utc;
 mod dj_mixes;
+mod error_report;
 
 use dj_mixes::{
     dj_mixes_status, import_legacy_dj_mixes_data, open_dj_mixes_browser,
@@ -275,6 +276,43 @@ fn save_playlist(app: AppHandle, args: SavePlaylistArgs) -> Result<ExportRespons
 #[tauri::command]
 fn open_support_page() -> Result<(), String> {
     open_url("https://buymeacoffee.com/xtragoodlabs")
+}
+
+/// Keeps an error from the window in the local error log (nothing leaves the Mac).
+#[tauri::command]
+fn report_client_error(message: String) {
+    let short: String = message.chars().take(500).collect();
+    error_report::record("window", &short);
+}
+
+/// Opens the GitHub bug form, filled in with the version, the Mac and recent errors.
+/// Nothing is sent unless the person submits the form.
+#[tauri::command]
+fn open_report_problem(app: AppHandle) -> Result<(), String> {
+    open_url(&error_report::report_url(&app.package_info().version.to_string()))
+}
+
+#[tauri::command]
+fn open_suggest_idea() -> Result<(), String> {
+    open_url(&error_report::idea_url())
+}
+
+/// Shows the error log file in Finder.
+#[tauri::command]
+fn open_error_log() -> Result<(), String> {
+    let file = error_report::log_file().ok_or("The error log is not ready yet.")?;
+    if let Some(dir) = file.parent() {
+        fs::create_dir_all(dir).map_err(|error| error.to_string())?;
+    }
+    if !file.exists() {
+        fs::write(file, "").map_err(|error| error.to_string())?;
+    }
+    if cfg!(target_os = "macos") {
+        Command::new("open").arg("-R").arg(file).status().map_err(|error| error.to_string())?;
+        Ok(())
+    } else {
+        open_path(file)
+    }
 }
 
 #[tauri::command]
@@ -1276,6 +1314,13 @@ fn open_url(url: &str) -> Result<(), String> {
 pub fn run() {
     let app = tauri::Builder::default()
         .manage(DjMixesState::default())
+        .setup(|app| {
+            // problem reports: errors stay in a log on this Mac until the person chooses to report them
+            if let Ok(dir) = app.path().app_data_dir() {
+                error_report::init(&dir);
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             dj_mixes_status,
             start_dj_mixes,
@@ -1293,6 +1338,10 @@ pub fn run() {
             save_playlist,
             open_exports_folder,
             open_support_page,
+            report_client_error,
+            open_report_problem,
+            open_suggest_idea,
+            open_error_log,
             write_tags_to_files,
             restore_latest_tag_backup
         ])

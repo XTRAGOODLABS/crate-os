@@ -784,3 +784,4 @@ tbody select {
 @media (max-width: 850px) { .playlist-builder-grid { grid-template-columns: 1fr; } .playlist-builder-head { align-items: stretch; flex-direction: column; } .playlist-builder-head label { min-width: 0; } }
 
 .tab.support { margin-left: auto; opacity: 0.85; }
+.tab.report { opacity: 0.85; }

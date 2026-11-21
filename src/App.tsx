@@ -1,6 +1,6 @@
 import DjMixes from "./DjMixes";
 import PlaylistBuilder from "./PlaylistBuilder";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./lib/errorLog";
 import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useState } from "react";
 import { productByline, productName } from "./lib/brand";
@@ -399,6 +399,9 @@ export default function App() {
             aria-pressed={view === "mixes"} onClick={() => setView("mixes")}>GOOD MIXX™</button>
           <button type="button" className="tab support" title="Support XTRA GOOD LABS"
             onClick={() => void invoke("open_support_page")}>☕ Buy me a coffee</button>
+          <button type="button" className="tab report"
+            title="Opens a bug report on GitHub with the details filled in. Nothing is sent until you submit it."
+            onClick={() => void invoke("open_report_problem")}>Report a problem</button>
         </nav>
       </header>
 
