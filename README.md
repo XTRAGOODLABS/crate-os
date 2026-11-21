@@ -6,7 +6,7 @@
 
 ### Your music library, your crates, and GOOD MIXX in one Mac app.
 
-From **XTRA GOOD LABS** · [**Buy me a coffee ☕**](https://buymeacoffee.com/xtragoodlabs) · [**Website**](https://xtragoodlabs.github.io/crate-os/) · [**Download for Mac**](https://github.com/XTRAGOODLABS/crate-os/releases/download/v0.2.0-beta.1/Crate-OS-DJ-Edition-0.2.0-beta.1-macOS-arm64.zip) · [**Changelog**](CHANGELOG.md) · [**Troubleshooting**](TROUBLESHOOTING.md) · [**More from XTRA GOOD LABS**](https://github.com/XTRAGOODLABS)
+From **XTRA GOOD LABS** · [**Buy me a coffee ☕**](https://buymeacoffee.com/xtragoodlabs) · [**Website**](https://xtragoodlabs.github.io/crate-os/) · [**Download for Mac**](https://github.com/XTRAGOODLABS/crate-os/releases/download/v0.2.0-beta.2/Crate-OS-DJ-Edition-0.2.0-beta.2-macOS-arm64.zip) · [**Changelog**](CHANGELOG.md) · [**Troubleshooting**](TROUBLESHOOTING.md) · [**More from XTRA GOOD LABS**](https://github.com/XTRAGOODLABS)
 
 </div>
 
@@ -14,7 +14,7 @@ Crate OS is a local-first macOS music-library and DJ workflow application built 
 
 GOOD MIXX is based on an original idea by **DJ Aquarobotics**.
 
-Version: `0.2.0-beta.1`
+Version: `0.2.0-beta.2`
 
 ## Features
 
