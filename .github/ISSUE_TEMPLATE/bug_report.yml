@@ -1,0 +1,58 @@
+name: "🐞 Report a bug in Crate OS"
+description: "Something in Crate OS didn't work"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for helping make Crate OS better! Plain words are fine."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you press or do, and what went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+  - type: input
+    id: version
+    attributes:
+      label: "Crate OS version"
+      description: "Shown in the app's About box or on the download page, for example 1.8.0"
+    validations:
+      required: true
+  - type: input
+    id: mac
+    attributes:
+      label: Your Mac
+      description: For example "M4 Mac mini, macOS 15" or "Intel MacBook Pro"
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of Crate OS?
+      options:
+        - Library scan
+        - Tags
+        - Crate Builder / playlists
+        - GOOD MIXX tab
+        - iPad / Portal access
+        - Exports
+        - Other
+  - type: input
+    id: library
+    attributes:
+      label: Rough size of your music library
+      description: For example "about 5,000 songs on an external drive"
+  - type: textarea
+    id: error
+    attributes:
+      label: Error message (if any)
+      description: Copy any error text you saw and paste it here.
+      render: text
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag a screenshot here if you have one

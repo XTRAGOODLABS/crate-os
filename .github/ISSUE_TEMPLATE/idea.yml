@@ -1,0 +1,14 @@
+name: "💡 Idea for Crate OS"
+description: "Something you'd like Crate OS to do"
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: How would it help your sets or sessions?
